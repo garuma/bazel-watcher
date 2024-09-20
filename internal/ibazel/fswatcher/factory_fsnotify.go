@@ -18,10 +18,27 @@
 package fswatcher
 
 import (
+	"os"
+
 	"github.com/bazelbuild/bazel-watcher/internal/ibazel/fswatcher/common"
 	"github.com/bazelbuild/bazel-watcher/internal/ibazel/fswatcher/fsnotify"
+	"github.com/bazelbuild/bazel-watcher/internal/ibazel/fswatcher/watchman"
 )
 
-func NewWatcher() (common.Watcher, error) {
+func NewWatcher(workspacePath string) (common.Watcher, error) {
+	flag, ok := os.LookupEnv("IBAZEL_USE_WATCHMAN")
+	if ok && flag != "0" {
+		var socketPath string
+		var err error
+		if len(flag) > 0 {
+			socketPath = flag
+		} else {
+			socketPath, err = watchman.DefaultWatchmanSocketPath()
+			if err != nil {
+				return nil, err
+			}
+		}
+		return watchman.NewWatchmanWatcher(socketPath, workspacePath)
+	}
 	return fsnotify.NewWatcher()
 }

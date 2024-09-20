@@ -35,6 +35,7 @@ go_library(
             "//internal/ibazel/fswatcher/common",
             "//internal/ibazel/fswatcher/fsevents",
             "//internal/ibazel/fswatcher/fsnotify",
+            "//internal/ibazel/fswatcher/watchman",
             "//internal/ibazel/log",
         ],
         "@io_bazel_rules_go//go/platform:dragonfly": [
@@ -62,6 +63,7 @@ go_library(
         "@io_bazel_rules_go//go/platform:linux": [
             "//internal/ibazel/fswatcher/common",
             "//internal/ibazel/fswatcher/fsnotify",
+            "//internal/ibazel/fswatcher/watchman",
         ],
         "@io_bazel_rules_go//go/platform:netbsd": [
             "//internal/ibazel/fswatcher/common",
@@ -82,6 +84,7 @@ go_library(
         "@io_bazel_rules_go//go/platform:windows": [
             "//internal/ibazel/fswatcher/common",
             "//internal/ibazel/fswatcher/fsnotify",
+            "//internal/ibazel/fswatcher/watchman",
         ],
         "//conditions:default": [],
     }),

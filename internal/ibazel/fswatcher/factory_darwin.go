@@ -25,7 +25,7 @@ import (
 	"github.com/bazelbuild/bazel-watcher/internal/ibazel/fswatcher/fsnotify"
 )
 
-func NewWatcher() (common.Watcher, error) {
+func NewWatcher(workspacePath string) (common.Watcher, error) {
 	flag, ok := os.LookupEnv("IBAZEL_USE_LEGACY_WATCHER")
 	if ok && flag != "0" {
 		return fsnotify.NewWatcher()

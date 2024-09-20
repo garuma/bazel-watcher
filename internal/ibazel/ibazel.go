@@ -88,14 +88,19 @@ type IBazel struct {
 
 func New(version string) (*IBazel, error) {
 	i := &IBazel{}
-	err := i.setup()
-	if err != nil {
-		return nil, err
-	}
 
 	i.debounceDuration = 100 * time.Millisecond
 	i.filesWatched = map[common.Watcher]map[string]struct{}{}
 	i.workspaceFinder = &workspace.MainWorkspace{}
+
+	workspacePath, err := i.workspaceFinder.FindWorkspace()
+	if err != nil {
+		return nil, err
+	}
+	err = i.setupWatchers(workspacePath)
+	if err != nil {
+		return nil, err
+	}
 
 	i.sigs = make(chan os.Signal, 1)
 	signal.Notify(i.sigs, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
@@ -229,17 +234,17 @@ func (i *IBazel) afterCommand(targets []string, command string, success bool, ou
 	}
 }
 
-func (i *IBazel) setup() error {
+func (i *IBazel) setupWatchers(workspacePath string) error {
 	var err error
 
 	// Even though we are going to recreate this when the query happens, create
 	// the pointer we will use to refer to the watchers right now.
-	i.buildFileWatcher, err = fswatcher.NewWatcher()
+	i.buildFileWatcher, err = fswatcher.NewWatcher(workspacePath)
 	if err != nil {
 		return err
 	}
 
-	i.sourceFileWatcher, err = fswatcher.NewWatcher()
+	i.sourceFileWatcher, err = fswatcher.NewWatcher(workspacePath)
 	if err != nil {
 		return err
 	}
